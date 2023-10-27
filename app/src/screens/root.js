@@ -1,7 +1,9 @@
 import React from "react";
+import { MetaMaskProvider } from "@metamask/sdk-react";
 
 import { CircularProgress, Grid, Typography } from "@mui/joy";
 import { getAuth, signInAnonymously } from "firebase/auth";
+import StoryScreen from "./story/story";
 
 export default function RootContainer() {
   const auth = getAuth();
@@ -26,7 +28,18 @@ export default function RootContainer() {
         </Typography>
 
         {currentUser ? (
-          "Logged in"
+          <MetaMaskProvider
+            debug={false}
+            sdkOptions={{
+              checkInstallationImmediately: false,
+              dappMetadata: {
+                name: "Demo React App",
+                url: window.location.host,
+              },
+            }}
+          >
+            <StoryScreen />
+          </MetaMaskProvider>
         ) : (
           <Grid xs={12} textAlign={"center"} marginTop={10}>
             <CircularProgress />
