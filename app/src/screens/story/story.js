@@ -1,11 +1,12 @@
-import { EtherspotTransactionKit } from "@etherspot/transaction-kit";
 import { useSDK } from "@metamask/sdk-react";
 import { Typography } from "@mui/joy";
 import React from "react";
 import SceneScreen from "./scene";
+import { EtherspotTransactionKit } from "@etherspot/transaction-kit";
+import { useLazyGetStoryStartQuery } from "../../services/story";
 
 export default function StoryScreen() {
-  const { provider, sdk, connected } = useSDK();
+  const { sdk, connected, provider } = useSDK();
   const [account, setAccount] = React.useState(null);
 
   React.useEffect(() => {
@@ -23,7 +24,9 @@ export default function StoryScreen() {
   }, [sdk]);
 
   return connected ? (
-    <SceneScreen provider={provider} />
+    <EtherspotTransactionKit provider={provider}>
+      <SceneScreen provider={provider} />
+    </EtherspotTransactionKit>
   ) : (
     <Typography>Connecting to MM...</Typography>
   );

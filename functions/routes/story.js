@@ -5,16 +5,14 @@ const Router = require("express").Router;
 const {
   storyIntentPositive,
   storyIntentNegative,
+  storyByPageId,
 } = require("../controllers/story");
 
 // Initialisation and instantiation
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello Story!");
-});
-
-router.get("/intent/positive", storyIntentPositive);
-router.get("/intent/negative", storyIntentNegative);
+router.get("/:pageId/intent/positive", storyIntentPositive);
+router.get("/:pageId/intent/negative", storyIntentNegative);
+router.get("/:pageId", storyByPageId);
 
 module.exports = router;

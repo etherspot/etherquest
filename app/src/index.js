@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { store } from "./store";
 import { Provider } from "react-redux";
 import RootContainer from "./screens/root";
+// eslint-disable-next-line no-unused-vars
 import app from "./services/firebase";
 
 const router = createBrowserRouter([
