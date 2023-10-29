@@ -1,4 +1,5 @@
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const { logger } = require("firebase-functions/v1");
 const OpenAI = require("openai").OpenAI;
 const { v4: uuidv4 } = require("uuid");
 
@@ -43,7 +44,7 @@ const storyAutogenerate = async (req, res) => {
   const storyPage = await db
     .collection("storybook")
     .orderBy("createdAt", "desc")
-    .limit(1)
+    .limit(3)
     .get();
 
   // Was there an error?
@@ -63,49 +64,50 @@ const storyAutogenerate = async (req, res) => {
      * ChatGPT to generate a new passage.
      */
     const storyDirections = [
-      "change in heart",
-      "simple continuation of the story",
-      "moral dialemma",
-      "relationship crisis",
-      "new friend",
-      "simple continuation of the story",
-      "flashback",
-      "flashforward",
-      "Encode London Hackathon",
-      "simple continuation of the story",
-      "Donald Trump 2024 Presidential Campaign",
-      "XBOX",
-      "plot twist",
-      "simple continuation of the story",
+      "a change in heart",
+      "a simple continuation of the story",
+      "a moral dialemma",
+      "a relationship crisis",
+      "a new friend",
+      "a simple continuation of the story",
+      "a flashback",
+      "a flashforward",
+      "a Encode London Hackathon",
+      "a simple continuation of the story",
+      "the Donald Trump 2024 Presidential Campaign",
+      "an XBOX",
+      "a plot twist",
+      "a simple continuation of the story",
       "Greta Thunberg",
       "Elon Musk",
       "Kanye West",
-      "simple continuation of the story",
+      "a simple continuation of the story",
       "Boris Johnson",
       "Grand Theft Auto 5",
       "Macaroni cheese",
-      "simple continuation of the story",
-      "Pizza",
+      "a simple continuation of the story",
+      "a Pizza",
       "Sushi",
-      "Curry",
-      "Stein of beer",
-      "simple continuation of the story",
+      "a Curry",
+      "many Steins of beer",
+      "a simple continuation of the story",
+      "remembering that he had a job as a software engineer",
     ];
 
     // Debug: the story page document
-    console.log("storyPageDocument:", storyPageDocument);
+    // logger.log("storyPageDocument:", storyPageDocument);
 
     /**
      * Next we're now going to generate the prompt
      * for ChatGPT to generate a new passage. We'll
      * construct the prompt below.
      */
-    const completionContent = `Please continue the storyline for this passage up to a maximum of 100 words, but now incorporating a ${
+    const completionContent = `Please continue the storyline for this passage up to a maximum of 100 words, but now incorporating ${
       storyDirections[Math.floor(Math.random() * storyDirections.length)]
-    }: ${storyPageDocument.passage}`;
+    }: ${storyPageDocument.passage} and leave the story on a cliffhanger`;
 
     // Debug: the completed prompt
-    console.log("completionContent:", completionContent);
+    // logger.log("completionContent:", completionContent);
 
     /**
      * Next let's instantiate the OpenAI API
@@ -119,17 +121,34 @@ const storyAutogenerate = async (req, res) => {
      * prompt. We're going to program the assistant
      * to be a bit funny for entertainment purposes.
      */
+
+    const messagesArray = [
+      {
+        role: "system",
+        content: "You are a funny storytelling assistant",
+      },
+    ];
+
+    for (let index = 0; index < storyPage.length; index++) {
+      const thisPage = storyPage[index];
+
+      messagesArray.push({
+        role: "user",
+        content: `And then, the next part of the story was ${
+          thisPage.data().passage
+        }`,
+      });
+    }
+
+    messagesArray.push({
+      role: "user",
+      content: completionContent,
+    });
+
+    logger.log("messagesArray:", messagesArray);
+
     const chatCompletion = await openai.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "You are a funny storytelling assistant",
-        },
-        {
-          role: "user",
-          content: completionContent,
-        },
-      ],
+      messages: messagesArray,
       model: "gpt-3.5-turbo",
     });
 
@@ -178,6 +197,10 @@ const storyAutogenerate = async (req, res) => {
 
         // Otherwise continue...
       } else {
+        logger.log(
+          "Successfully generated new story page and linked to previous page"
+        );
+
         return res.json({
           positiveIntentLinkUpdate,
           newStoryPage,
