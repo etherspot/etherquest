@@ -1,4 +1,6 @@
 // Core
+require("dotenv").config();
+
 const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const { initializeApp } = require("firebase-admin/app");

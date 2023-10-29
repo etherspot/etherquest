@@ -15,26 +15,22 @@ export default function SceneScreen(props) {
   return (
     <Grid container spacing={2}>
       <Grid xs={12}>
-        <Typography level="title-lg" textAlign={"center"}>
-          {storyResult.data?.title}
-        </Typography>
-      </Grid>
-
-      <Grid xs={12}>
         <Typography level="title-md" textAlign={"center"}>
           {storyResult.data?.passage}
         </Typography>
       </Grid>
 
-      <Grid xs={12}>
-        <AspectRatio objectFit="contain">
-          <img
-            src={storyResult.data?.image}
-            srcSet={storyResult.data?.images}
-            alt={storyResult.data?.title}
-          />
-        </AspectRatio>
-      </Grid>
+      {storyResult.data?.image && (
+        <Grid xs={12}>
+          <AspectRatio objectFit="contain">
+            <img
+              src={storyResult.data?.image}
+              srcSet={storyResult.data?.images}
+              alt={storyResult.data?.title}
+            />
+          </AspectRatio>
+        </Grid>
+      )}
 
       <Grid xs={6}>
         {storyResult.data?.negativeIntentPageId ? (

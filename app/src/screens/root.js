@@ -23,7 +23,12 @@ export default function RootContainer() {
   return (
     <Grid container>
       <Grid xs={12}>
-        <Typography level="title-lg" textAlign={"center"} marginBottom={10}>
+        <Typography
+          level="title-lg"
+          textAlign={"center"}
+          marginBottom={10}
+          marginTop={10}
+        >
           EtherQuest
         </Typography>
 
